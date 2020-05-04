@@ -9,16 +9,40 @@ body {
   justify-content: center;
   align-items: center;
 }
+.left-column,
+.right-column {
+  background-color: rebeccapurple;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.form {
+  display: none;
+}
+.controls-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10vh;
+  background-color: yellow;
+}
 .board-container {
   background-color: red;
   width: 90vh;
   height: 90vh;
+  display: grid;
+  grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+  justify-items: center;
+  align-items: center;
 }
 .board-square {
-  line-height: 5vh;
+  font-size: 5rem;
+  line-height: 25vh;
   text-align: center;
   background-color: white;
-  height: 5vh;
-  width: 5vh;
+  height: 25vh;
+  width: 25vh;
   margin: 1rem;
 }

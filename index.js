@@ -37,3 +37,13 @@ const Player = ((name, sign) => {
     return { getName, getSign };
 });
 
+const playerX = Player("jeff", "X");
+const playerY = Player("bob", "O");
+document.querySelector(".start").addEventListener("click", function () {
+    let forms = Array.from(document.querySelectorAll(".form"));
+    for (let i = 0; i < forms.length; i++) {
+        forms[i].style.display = "block";
+    }
+});
+GameBoard.makeMove(playerX.getSign(), 3)
+GameBoard.renderBoard();
