@@ -3,3 +3,22 @@
   padding: 0;
   margin: 0;
 }
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.board-container {
+  background-color: red;
+  width: 90vh;
+  height: 90vh;
+}
+.board-square {
+  line-height: 5vh;
+  text-align: center;
+  background-color: white;
+  height: 5vh;
+  width: 5vh;
+  margin: 1rem;
+}

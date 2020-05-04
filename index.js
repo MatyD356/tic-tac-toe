@@ -19,9 +19,15 @@ const GameBoard = (() => {
             }
         }
     }
-    return { makeMove };
+    const renderBoard = () => {
+        for (let i = 0; i < board.length; i++) {
+            let container = document.querySelector(".board-container");
+            let div = document.createElement("div");
+            div.innerHTML = board[i];
+            div.classList.add("board-square");
+            container.appendChild(div);
+        };
+    }
+    return { makeMove, renderBoard };
 })();
 
-
-GameBoard.makeMove("O", 3);
-GameBoard.makeMove("X", 3);
