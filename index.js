@@ -31,3 +31,9 @@ const GameBoard = (() => {
     return { makeMove, renderBoard };
 })();
 
+const Player = ((name, sign) => {
+    const getName = () => console.log(name);
+    const getSign = () => sign;
+    return { getName, getSign };
+});
+
