@@ -18,7 +18,7 @@ const GameBoard = (() => {
                 console.log("not a valid move");
             }
         }
-    }
+    };
     const renderBoard = () => {
         for (let i = 0; i < board.length; i++) {
             let container = document.querySelector(".board-container");
@@ -27,18 +27,26 @@ const GameBoard = (() => {
             div.classList.add("board-square");
             container.appendChild(div);
         };
-    }
+    };
+
+    return { makeMove, renderBoard };
+})();
+
+const GameControlls = (() => {
+    const forms = Array.from(document.querySelectorAll(".form"));
+    const inputs = Array.from(document.querySelectorAll(".name-input"));
+    const createButtons = Array.from(document.querySelectorAll(".create"));
+    const leftColumn = document.querySelector(".left-column");
+    const rightColumn = document.querySelector(".right-column");
     const addEventListeners = () => {
         //showing forms
-        const forms = Array.from(document.querySelectorAll(".form"));
         document.querySelector(".start").addEventListener("click", () => {
             for (let i = 0; i < forms.length; i++) {
                 forms[i].style.display = "block";
             }
-            gameFlow.changeGameState("creatingPlayers")
+            GameFlow.changeGameState("creatingPlayers")
         });
-        //create btns
-        const createButtons = Array.from(document.querySelectorAll(".create"));
+        //players forms events
         for (let i = 0; i < createButtons.length; i++) {
             if (createButtons[i].textContent == "Play vs Human") {
                 createButtons[i].addEventListener("click", () => {
@@ -46,24 +54,37 @@ const GameBoard = (() => {
                     document.querySelector(".form-player-O").style.display = "block";
                 });
             } else if (createButtons[i].textContent == "Create Player") {
-                let inputs = Array.from(document.querySelectorAll(".name-input"));
-                let playerName = null;
-                if (i == 0) {
-                    playerName = inputs[0].value
-                } else if (i == 3) {
-                    playerName = inputs[1].value
-                }
                 createButtons[i].addEventListener("click", () => {
-                    gameFlow.createPlayer(playerName, createButtons[i].id)
+                    let playerName = null;
+                    if (i == 0) {
+                        console.log(inputs[0].value);
+                        playerName = inputs[0].value
+                    } else if (i == 3) {
+                        playerName = inputs[1].value
+                    }
+                    GameFlow.createPlayer(playerName, createButtons[i].id)
                 });
             } else if (createButtons[i].textContent == "Play vs AI") {
                 createButtons[i].addEventListener("click", () => {
-                    gameFlow.createPlayer("AI", "O")
+                    GameFlow.createPlayer("AI", "O")
                 })
             };
         }
     };
-    return { makeMove, renderBoard, addEventListeners };
+    const showScore = (player) => {
+        let div = document.createElement("div");
+        div.innerHTML =
+            `<h1>${player.getName()} </h1>
+             <p>${player.getSign()}</p>`
+        if (player.getSign() == "X") {
+            leftColumn.textContent = "";
+            leftColumn.appendChild(div)
+        } else if (player.getSign() == "O") {
+            rightColumn.textContent = "";
+            rightColumn.appendChild(div)
+        }
+    }
+    return { addEventListeners, showScore };
 })();
 
 const Player = ((name, sign) => {
@@ -72,10 +93,23 @@ const Player = ((name, sign) => {
     return { getName, getSign };
 });
 
-const gameFlow = (() => {
+const GameFlow = (() => {
     let gameState = "start";
     let playerX = null;
     let playerO = null;
+    let check = setInterval(() => {
+        if (playerX) {
+            GameControlls.showScore(playerX)
+        }
+        if (playerO) {
+            GameControlls.showScore(playerO)
+        }
+        if (playerX && playerO) {
+            clearInterval(check)
+            changeGameState("playersReady")
+        }
+        console.log('run')
+    }, 1000)
 
     const changeGameState = (newState) => {
         gameState = newState;
@@ -83,8 +117,7 @@ const gameFlow = (() => {
 
     const startGame = () => {
         GameBoard.renderBoard();
-        GameBoard.addEventListeners();
-
+        GameControlls.addEventListeners();
     }
 
     const createPlayer = (name, sign) => {
@@ -96,4 +129,4 @@ const gameFlow = (() => {
     return { startGame, createPlayer, changeGameState }
 })();
 
-gameFlow.startGame()
+GameFlow.startGame()
