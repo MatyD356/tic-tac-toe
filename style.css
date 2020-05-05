@@ -9,6 +9,9 @@ body {
   justify-content: center;
   align-items: center;
 }
+button {
+  display: block;
+}
 .left-column,
 .right-column {
   background-color: rebeccapurple;
@@ -18,7 +21,8 @@ body {
   align-items: center;
   width: 100%;
 }
-.form {
+.form,
+.form-player-O {
   display: none;
 }
 .controls-container {
