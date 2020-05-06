@@ -1,35 +1,56 @@
 const GameBoard = (() => {
+
+    const container = document.querySelector(".board-container");
     const board = ["", "", "", "", "", "", "", "", ""];
     const makeMove = (move, target) => {
         if (move == "X") {
-            if (board[target - 1] == "") {
-                board[target - 1] = move
+            if (board[target] == "") {
+                board[target] = move
                 console.log(`making ${move} on ${target} square`)
                 console.log(board)
+                renderBoard();
             } else {
                 console.log("not a valid move");
             }
         } else if (move == "O") {
-            if (board[target - 1] == "") {
-                board[target - 1] = move;
+            if (board[target] == "") {
+                board[target] = move;
                 console.log(`making ${move} on ${target} square`)
                 console.log(board)
+                renderBoard();
             } else {
                 console.log("not a valid move");
             }
         }
     };
     const renderBoard = () => {
+        container.textContent = "";
         for (let i = 0; i < board.length; i++) {
-            let container = document.querySelector(".board-container");
             let div = document.createElement("div");
-            div.innerHTML = board[i];
+            div.textContent = board[i];
             div.classList.add("board-square");
+            div.setAttribute("data-index", i)
             container.appendChild(div);
         };
     };
+    const watchForchange = () => {
+        const gameBoard = document.querySelector(".board-container");
+        gameBoard.addEventListener("click", (e) => {
+            if (GameFlow.getGameStatus() == "playerXTurn") {
+                console.log(container)
+                makeMove("X", e.target.dataset.index);
+                console.log(e.target);
+                GameFlow.changeGameState("playerOTurn")
+            } else if (GameFlow.getGameStatus() == "playerOTurn") {
+                console.log(container)
+                makeMove("O", e.target.dataset.index);
+                console.log(e.target);
+                GameFlow.changeGameState("playerXTurn")
+            }
+        });
+    };
 
-    return { makeMove, renderBoard };
+    return { makeMove, renderBoard, watchForchange };
 })();
 
 const GameControlls = (() => {
@@ -38,6 +59,7 @@ const GameControlls = (() => {
     const createButtons = Array.from(document.querySelectorAll(".create"));
     const leftColumn = document.querySelector(".left-column");
     const rightColumn = document.querySelector(".right-column");
+
     const addEventListeners = () => {
         //showing forms
         document.querySelector(".start").addEventListener("click", () => {
@@ -71,6 +93,7 @@ const GameControlls = (() => {
             };
         }
     };
+
     const showScore = (player) => {
         let div = document.createElement("div");
         div.innerHTML =
@@ -97,27 +120,34 @@ const GameFlow = (() => {
     let gameState = "start";
     let playerX = null;
     let playerO = null;
-    let check = setInterval(() => {
-        if (playerX) {
-            GameControlls.showScore(playerX)
-        }
-        if (playerO) {
-            GameControlls.showScore(playerO)
-        }
-        if (playerX && playerO) {
-            clearInterval(check)
-            changeGameState("playersReady")
-        }
-        console.log('run')
-    }, 1000)
+
+    const checkForPlayers = () => {
+        let check = setInterval(() => {
+            if (playerX) {
+                GameControlls.showScore(playerX)
+            }
+            if (playerO) {
+                GameControlls.showScore(playerO)
+            }
+            if (playerX && playerO) {
+                clearInterval(check)
+                changeGameState("playerXTurn")
+                GameBoard.renderBoard();
+                GameBoard.watchForchange();
+            }
+        }, 1000)
+    }
 
     const changeGameState = (newState) => {
         gameState = newState;
     }
+    const getGameStatus = () => {
+        return gameState;
+    }
 
     const startGame = () => {
-        GameBoard.renderBoard();
         GameControlls.addEventListeners();
+        checkForPlayers();
     }
 
     const createPlayer = (name, sign) => {
@@ -126,7 +156,8 @@ const GameFlow = (() => {
         console.log(playerX.getName(), playerX.getSign())
         console.log(playerO.getName(), playerO.getSign())
     }
-    return { startGame, createPlayer, changeGameState }
+
+    return { startGame, createPlayer, changeGameState, getGameStatus }
 })();
 
 GameFlow.startGame()
