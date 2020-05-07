@@ -63,6 +63,8 @@ const GameBoard = (() => {
         });
     };
     const checkForGameEnd = () => {
+        let leftCrosswise = board[0][0] + board[1][1] + board[2][2]
+        let rightCrosswise = board[2][0] + board[1][1] + board[0][2]
         for (let i = 0; i < board.length; i++) {
             let row = board[i].reduce((a, b) => {
                 return a + b;
@@ -72,11 +74,12 @@ const GameBoard = (() => {
                 col += board[j][i];
                 console.log(col)
             }
-            if (col == "XXX" || row == "XXX") {
+
+            if (col == "XXX" || row == "XXX" || leftCrosswise == "XXX" || rightCrosswise == "XXX") {
                 alert("X wins");
                 GameFlow.changeGameState("PlayerXWins")
                 return;
-            } else if (col == "OOO" || row == "OOO") {
+            } else if (col == "OOO" || row == "OOO" || leftCrosswise == "OOO" || rightCrosswise == "OOO") {
                 alert("O wins");
                 GameFlow.changeGameState("PlayerOWins")
                 return;
