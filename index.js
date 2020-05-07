@@ -63,8 +63,28 @@ const GameBoard = (() => {
         });
     };
     const checkForGameEnd = () => {
+        for (let i = 0; i < board.length; i++) {
+            let row = board[i].reduce((a, b) => {
+                return a + b;
+            });
+            let col = "";
+            for (let j = 0; j < board.length; j++) {
+                col += board[j][i];
+                console.log(col)
+            }
+            if (col == "XXX" || row == "XXX") {
+                alert("X wins");
+                GameFlow.changeGameState("PlayerXWins")
+                return;
+            } else if (col == "OOO" || row == "OOO") {
+                alert("O wins");
+                GameFlow.changeGameState("PlayerOWins")
+                return;
+            };
+        };
 
     };
+
     return { makeMove, renderBoard, watchForchange, checkForGameEnd };
 })();
 
