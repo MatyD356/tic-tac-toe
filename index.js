@@ -1,7 +1,7 @@
 const GameBoard = (() => {
 
     const container = document.querySelector(".board-container");
-    const board = [["", "", ""], ["", "", ""], ["", "", ""]];
+    let board = [["", "", ""], ["", "", ""], ["", "", ""]];
     const makeMove = (move, target) => {
         let column = 0;
 
@@ -49,8 +49,10 @@ const GameBoard = (() => {
         };
     };
     const watchForchange = () => {
-        const gameBoard = document.querySelector(".board-container");
-        gameBoard.addEventListener("click", (e) => {
+        if (container.onclick) {
+            container.onclick = null;
+        }
+        const clickHandler = (e) => {
             if (GameFlow.getGameStatus() == "playerXTurn") {
                 makeMove("X", e.target.dataset.index);
                 checkForGameEnd();
@@ -60,7 +62,8 @@ const GameBoard = (() => {
                 checkForGameEnd();
                 GameFlow.changeGameState("playerXTurn")
             }
-        });
+        }
+        container.onclick = clickHandler;
     };
     const checkForGameEnd = () => {
         let leftCrosswise = board[0][0] + board[1][1] + board[2][2]
@@ -72,7 +75,6 @@ const GameBoard = (() => {
             let col = "";
             for (let j = 0; j < board.length; j++) {
                 col += board[j][i];
-                console.log(col)
             }
 
             if (col == "XXX" || row == "XXX" || leftCrosswise == "XXX" || rightCrosswise == "XXX") {
@@ -87,8 +89,11 @@ const GameBoard = (() => {
         };
 
     };
+    const changeBoard = (arr) => {
+        board = arr;
+    };
 
-    return { makeMove, renderBoard, watchForchange, checkForGameEnd };
+    return { makeMove, renderBoard, watchForchange, checkForGameEnd, changeBoard };
 })();
 
 const GameControlls = (() => {
@@ -105,6 +110,9 @@ const GameControlls = (() => {
                 forms[i].style.display = "block";
             }
             GameFlow.changeGameState("creatingPlayers")
+        });
+        document.querySelector(".restart").addEventListener("click", () => {
+            restartGame();
         });
         //players forms events
         for (let i = 0; i < createButtons.length; i++) {
@@ -131,17 +139,38 @@ const GameControlls = (() => {
             };
         }
     };
-
+    const restartGame = () => {
+        GameFlow.deletePlayer("X");
+        GameFlow.deletePlayer("O");
+        GameBoard.changeBoard([]);
+        GameBoard.renderBoard();
+        hideScore();
+        GameBoard.changeBoard([["", "", ""], ["", "", ""], ["", "", ""]]);
+        GameFlow.changeGameState("start");
+        GameFlow.startGame();
+    }
+    const hideScore = () => {
+        for (let i = 0; i < forms.length; i++) {
+            forms[i].style.display = "none";
+        }
+        if (leftColumn.querySelector("div")) {
+            leftColumn.querySelector("div").remove();
+        }
+        if (rightColumn.querySelector("div")) {
+            rightColumn.querySelector("div").remove();
+        }
+    }
     const showScore = (player) => {
         let div = document.createElement("div");
         div.innerHTML =
             `<h1>${player.getName()} </h1>
              <p>${player.getSign()}</p>`
-        if (player.getSign() == "X") {
-            leftColumn.textContent = "";
+        if (player.getSign() == "X" && leftColumn.children.length == 1) {
+            forms[0].style.display = "none";
             leftColumn.appendChild(div)
-        } else if (player.getSign() == "O") {
-            rightColumn.textContent = "";
+        } else if (player.getSign() == "O" && rightColumn.children.length == 2) {
+            forms[1].style.display = "none";
+            document.querySelector(".form-player-O").style.display = "none";
             rightColumn.appendChild(div)
         }
     }
@@ -169,6 +198,7 @@ const GameFlow = (() => {
             }
             if (playerX && playerO) {
                 clearInterval(check)
+                console.log('xd')
                 changeGameState("playerXTurn")
                 GameBoard.renderBoard();
                 GameBoard.watchForchange();
@@ -182,7 +212,6 @@ const GameFlow = (() => {
         return gameState;
     };
     const startGame = () => {
-        GameControlls.addEventListeners();
         checkForPlayers();
     };
     const createPlayer = (name, sign) => {
@@ -191,7 +220,15 @@ const GameFlow = (() => {
         console.log(playerX.getName(), playerX.getSign())
         console.log(playerO.getName(), playerO.getSign())
     };
-    return { startGame, createPlayer, changeGameState, getGameStatus }
+    const deletePlayer = (target) => {
+        if (target == "X") {
+            playerX = null;
+        } else if (target == "O") {
+            playerO = null;
+        }
+    }
+    return { startGame, createPlayer, changeGameState, getGameStatus, deletePlayer }
 })();
 
+GameControlls.addEventListeners();
 GameFlow.startGame()
