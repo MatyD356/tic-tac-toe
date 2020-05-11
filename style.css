@@ -4,13 +4,15 @@
   margin: 0;
 }
 body {
+  font-family: monaco, monospace;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-button {
+.btn {
   display: block;
+  font-family: monaco, monospace;
 }
 .left-column,
 .right-column {

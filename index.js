@@ -1,10 +1,8 @@
 const GameBoard = (() => {
-
     const container = document.querySelector(".board-container");
     let board = [["", "", ""], ["", "", ""], ["", "", ""]];
     const makeMove = (move, target) => {
         let column = 0;
-
         if (target > 5) {
             column = 2;
             target -= 6;
@@ -12,8 +10,19 @@ const GameBoard = (() => {
             column = 1;
             target -= 3;
         }
-
-        if (move == "X") {
+        if (move == "AI") {
+            console.log(column, target)
+            if (board[column][target] == "") {
+                board[column][target] = "O"
+                console.log(`making ${move} on ${target} square`)
+                console.log(board)
+                renderBoard();
+                GameFlow.changeGameState("playerXTurn")
+            } else {
+                console.log("not a valid move");
+            }
+        }
+        else if (move == "X") {
             if (board[column][target] == "") {
                 board[column][target] = move
                 console.log(`making ${move} on ${target} square`)
@@ -49,21 +58,34 @@ const GameBoard = (() => {
         };
     };
     const watchForchange = () => {
-        if (container.onclick) {
-            container.onclick = null;
-        }
         const clickHandler = (e) => {
             if (GameFlow.getGameStatus() == "playerXTurn") {
                 makeMove("X", e.target.dataset.index);
                 checkForGameEnd();
-                GameFlow.changeGameState("playerOTurn");
+                if (GameFlow.getPlayerO() == "AI") {
+                    GameFlow.changeGameState("aiPlayerTurn");
+                } else {
+                    GameFlow.changeGameState("playerOTurn");
+                }
             } else if (GameFlow.getGameStatus() == "playerOTurn") {
                 makeMove("O", e.target.dataset.index);
                 checkForGameEnd();
                 GameFlow.changeGameState("playerXTurn")
+            } else if (GameFlow.getGameStatus() == "aiPlayerTurn") {
+                while (GameFlow.getGameStatus() == "aiPlayerTurn") {
+                    let num = Math.floor(Math.random() * (9 - 0)) + 0;
+                    makeMove("AI", num)
+                };
+                checkForGameEnd();
             }
         }
         container.onclick = clickHandler;
+        setInterval(() => {
+            if (GameFlow.getGameStatus() == "aiPlayerTurn") {
+                container.click();
+            }
+        }, 100)
+
     };
     const checkForGameEnd = () => {
         let leftCrosswise = board[0][0] + board[1][1] + board[2][2]
@@ -92,29 +114,26 @@ const GameBoard = (() => {
     const changeBoard = (arr) => {
         board = arr;
     };
-
     return { makeMove, renderBoard, watchForchange, checkForGameEnd, changeBoard };
 })();
-
 const GameControlls = (() => {
     const forms = Array.from(document.querySelectorAll(".form"));
     const inputs = Array.from(document.querySelectorAll(".name-input"));
     const createButtons = Array.from(document.querySelectorAll(".create"));
     const leftColumn = document.querySelector(".left-column");
     const rightColumn = document.querySelector(".right-column");
-
     const addEventListeners = () => {
-        //showing forms
         document.querySelector(".start").addEventListener("click", () => {
-            for (let i = 0; i < forms.length; i++) {
-                forms[i].style.display = "block";
+            if (GameFlow.getGameStatus() === "start") {
+                for (let i = 0; i < forms.length; i++) {
+                    forms[i].style.display = "block";
+                }
+                GameFlow.changeGameState("creatingPlayers")
             }
-            GameFlow.changeGameState("creatingPlayers")
         });
         document.querySelector(".restart").addEventListener("click", () => {
             restartGame();
         });
-        //players forms events
         for (let i = 0; i < createButtons.length; i++) {
             if (createButtons[i].textContent == "Play vs Human") {
                 createButtons[i].addEventListener("click", () => {
@@ -153,6 +172,10 @@ const GameControlls = (() => {
         for (let i = 0; i < forms.length; i++) {
             forms[i].style.display = "none";
         }
+        console.log(document.querySelector(".form-player-O"))
+        if (document.querySelector(".form-player-O")) {
+            document.querySelector(".form-player-O").style.display = "none";
+        }
         if (leftColumn.querySelector("div")) {
             leftColumn.querySelector("div").remove();
         }
@@ -176,18 +199,15 @@ const GameControlls = (() => {
     }
     return { addEventListeners, showScore };
 })();
-
 const Player = ((name, sign) => {
     const getName = () => name;
     const getSign = () => sign;
     return { getName, getSign };
 });
-
 const GameFlow = (() => {
     let gameState = "start";
     let playerX = null;
     let playerO = null;
-
     const checkForPlayers = () => {
         let check = setInterval(() => {
             if (playerX) {
@@ -198,7 +218,6 @@ const GameFlow = (() => {
             }
             if (playerX && playerO) {
                 clearInterval(check)
-                console.log('xd')
                 changeGameState("playerXTurn")
                 GameBoard.renderBoard();
                 GameBoard.watchForchange();
@@ -227,8 +246,10 @@ const GameFlow = (() => {
             playerO = null;
         }
     }
-    return { startGame, createPlayer, changeGameState, getGameStatus, deletePlayer }
+    const getPlayerO = () => {
+        return playerO.getName();
+    }
+    return { startGame, createPlayer, changeGameState, getGameStatus, deletePlayer, getPlayerO }
 })();
-
 GameControlls.addEventListeners();
 GameFlow.startGame()
