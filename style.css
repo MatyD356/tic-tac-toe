@@ -1,9 +1,14 @@
 * {
+  --main-color: #95a1c0;
+  --dark-shades: #2d384f;
+  --light-accent: #ae716c;
+  --light-shades: #f7f5f4;
   box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
 body {
+  background-color: var(--light-shades);
   font-family: monaco, monospace;
   min-height: 100vh;
   display: flex;
@@ -16,7 +21,6 @@ body {
 }
 .left-column,
 .right-column {
-  background-color: rebeccapurple;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -32,23 +36,70 @@ body {
   align-items: center;
   justify-content: center;
   height: 10vh;
-  background-color: yellow;
 }
 .board-container {
-  background-color: red;
-  width: 90vh;
-  height: 90vh;
+  padding: 5rem;
   display: grid;
   grid-template: repeat(3, 1fr) / repeat(3, 1fr);
   justify-items: center;
   align-items: center;
 }
+.middle-column {
+  background-color: var(--main-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.left-column {
+  border-right: 1rem solid var(--dark-shades);
+}
+.right-column {
+  border-left: 1rem solid var(--dark-shades);
+}
 .board-square {
-  font-size: 5rem;
-  line-height: 25vh;
-  text-align: center;
-  background-color: white;
-  height: 25vh;
-  width: 25vh;
+  font-weight: 900;
+  cursor: pointer;
+  color: var(--light-shades);
+  border-radius: 10px;
+  height: 10rem;
+  line-height: 10rem;
+  width: 10rem;
   margin: 1rem;
+  background-color: var(--light-accent);
+  font-size: 5rem;
+  text-align: center;
+}
+.board-square:hover {
+  background-color: var(--dark-shades);
+}
+.btn {
+  background-color: var(--light-accent);
+  color: var(--light-shades);
+  cursor: pointer;
+  border: none;
+  font-size: 2rem;
+  height: 3rem;
+  width: 20rem;
+  border-radius: 10px;
+  margin: 1rem;
+}
+.btn:hover {
+  background-color: var(--dark-shades);
+}
+input {
+  font-size: 1.5rem;
+  background-color: var(--light-shades);
+  text-align: center;
+  border: none;
+  border-bottom: 2px solid var(--dark-shades);
+  width: 20rem;
+  height: 3rem;
+  margin: 1rem;
+}
+.label-p {
+  text-align: center;
+  margin: 1rem;
+  font-size: 1.5rem;
 }

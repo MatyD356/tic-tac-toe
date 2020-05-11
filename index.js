@@ -11,34 +11,25 @@ const GameBoard = (() => {
             target -= 3;
         }
         if (move == "AI") {
-            console.log(column, target)
             if (board[column][target] == "") {
                 board[column][target] = "O"
-                console.log(`making ${move} on ${target} square`)
-                console.log(board)
                 renderBoard();
                 GameFlow.changeGameState("playerXTurn")
-            } else {
-                console.log("not a valid move");
             }
         }
         else if (move == "X") {
             if (board[column][target] == "") {
                 board[column][target] = move
-                console.log(`making ${move} on ${target} square`)
-                console.log(board)
                 renderBoard();
             } else {
-                console.log("not a valid move");
+                alert("not a valid move");
             }
         } else if (move == "O") {
             if (board[column][target] == "") {
                 board[column][target] = move;
-                console.log(`making ${move} on ${target} square`)
-                console.log(board)
                 renderBoard();
             } else {
-                console.log("not a valid move");
+                alert("not a valid move");
             }
         }
     };
@@ -144,12 +135,20 @@ const GameControlls = (() => {
                 createButtons[i].addEventListener("click", () => {
                     let playerName = null;
                     if (i == 0) {
-                        console.log(inputs[0].value);
-                        playerName = inputs[0].value
+                        if (inputs[0].value.length < 3) {
+                            alert("to short")
+                        } else {
+                            playerName = inputs[0].value
+                            GameFlow.createPlayer(playerName, createButtons[i].id)
+                        }
                     } else if (i == 3) {
-                        playerName = inputs[1].value
+                        if (inputs[1].value.length < 3) {
+                            alert("to short")
+                        } else {
+                            playerName = inputs[1].value
+                            GameFlow.createPlayer(playerName, createButtons[i].id)
+                        }
                     }
-                    GameFlow.createPlayer(playerName, createButtons[i].id)
                 });
             } else if (createButtons[i].textContent == "Play vs AI") {
                 createButtons[i].addEventListener("click", () => {
@@ -172,7 +171,6 @@ const GameControlls = (() => {
         for (let i = 0; i < forms.length; i++) {
             forms[i].style.display = "none";
         }
-        console.log(document.querySelector(".form-player-O"))
         if (document.querySelector(".form-player-O")) {
             document.querySelector(".form-player-O").style.display = "none";
         }
@@ -185,9 +183,10 @@ const GameControlls = (() => {
     }
     const showScore = (player) => {
         let div = document.createElement("div");
+        div.classList.add("player-info")
         div.innerHTML =
-            `<h1>${player.getName()} </h1>
-             <p>${player.getSign()}</p>`
+            `<p>Player ${player.getSign()}</p>
+            <h1>${player.getName()} </h1>`
         if (player.getSign() == "X" && leftColumn.children.length == 1) {
             forms[0].style.display = "none";
             leftColumn.appendChild(div)
@@ -222,7 +221,7 @@ const GameFlow = (() => {
                 GameBoard.renderBoard();
                 GameBoard.watchForchange();
             }
-        }, 1000)
+        }, 100)
     };
     const changeGameState = (newState) => {
         gameState = newState;
@@ -236,8 +235,6 @@ const GameFlow = (() => {
     const createPlayer = (name, sign) => {
         if (sign == "X") { playerX = Player(name, sign) }
         else if (sign == "O") { playerO = Player(name, sign) }
-        console.log(playerX.getName(), playerX.getSign())
-        console.log(playerO.getName(), playerO.getSign())
     };
     const deletePlayer = (target) => {
         if (target == "X") {
