@@ -66,8 +66,8 @@ const GameBoard = (() => {
                 while (GameFlow.getGameStatus() == "aiPlayerTurn") {
                     let num = Math.floor(Math.random() * (9 - 0)) + 0;
                     makeMove("AI", num)
+                    checkForGameEnd();
                 };
-                checkForGameEnd();
             }
         }
         container.onclick = clickHandler;
@@ -174,11 +174,11 @@ const GameControlls = (() => {
         if (document.querySelector(".form-player-O")) {
             document.querySelector(".form-player-O").style.display = "none";
         }
-        if (leftColumn.querySelector("div")) {
-            leftColumn.querySelector("div").remove();
+        if (leftColumn.querySelector(".player-info")) {
+            leftColumn.querySelector(".player-info").remove();
         }
-        if (rightColumn.querySelector("div")) {
-            rightColumn.querySelector("div").remove();
+        if (rightColumn.querySelector(".player-info")) {
+            rightColumn.querySelector(".player-info").remove();
         }
     }
     const showScore = (player) => {
