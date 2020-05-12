@@ -52,7 +52,9 @@ const GameBoard = (() => {
         const clickHandler = (e) => {
             if (GameFlow.getGameStatus() == "playerXTurn") {
                 makeMove("X", e.target.dataset.index);
-                checkForGameEnd();
+                if (checkForGameEnd()) {
+                    return;
+                };
                 if (GameFlow.getPlayerO() == "AI") {
                     GameFlow.changeGameState("aiPlayerTurn");
                 } else {
@@ -60,13 +62,17 @@ const GameBoard = (() => {
                 }
             } else if (GameFlow.getGameStatus() == "playerOTurn") {
                 makeMove("O", e.target.dataset.index);
-                checkForGameEnd();
+                if (checkForGameEnd()) {
+                    return;
+                }
                 GameFlow.changeGameState("playerXTurn")
+                console.log(checkForGameEnd())
             } else if (GameFlow.getGameStatus() == "aiPlayerTurn") {
                 while (GameFlow.getGameStatus() == "aiPlayerTurn") {
                     let num = Math.floor(Math.random() * (9 - 0)) + 0;
                     makeMove("AI", num)
-                    checkForGameEnd();
+                    checkForGameEnd()
+                    return;
                 };
             }
         }
@@ -93,12 +99,14 @@ const GameBoard = (() => {
             if (col == "XXX" || row == "XXX" || leftCrosswise == "XXX" || rightCrosswise == "XXX") {
                 alert("X wins");
                 GameFlow.changeGameState("PlayerXWins")
-                return;
+                return true;
             } else if (col == "OOO" || row == "OOO" || leftCrosswise == "OOO" || rightCrosswise == "OOO") {
                 alert("O wins");
                 GameFlow.changeGameState("PlayerOWins")
-                return;
-            };
+                return true;
+            } else {
+                return false;
+            }
         };
 
     };
