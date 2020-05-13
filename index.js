@@ -21,8 +21,14 @@ const GameBoard = (() => {
             if (board[column][target] == "") {
                 board[column][target] = move
                 renderBoard();
+                if (GameFlow.getPlayerO() == "AI") {
+                    GameFlow.changeGameState("aiPlayerTurn");
+                } else {
+                    GameFlow.changeGameState("playerOTurn");
+                }
             } else {
                 alert("not a valid move");
+                GameFlow.changeGameState("playerXTurn")
             }
         } else if (move == "O") {
             if (board[column][target] == "") {
@@ -30,6 +36,7 @@ const GameBoard = (() => {
                 renderBoard();
             } else {
                 alert("not a valid move");
+                GameFlow.changeGameState("playerOTurn")
             }
         }
     };
@@ -55,18 +62,12 @@ const GameBoard = (() => {
                 if (checkForGameEnd()) {
                     return;
                 };
-                if (GameFlow.getPlayerO() == "AI") {
-                    GameFlow.changeGameState("aiPlayerTurn");
-                } else {
-                    GameFlow.changeGameState("playerOTurn");
-                }
             } else if (GameFlow.getGameStatus() == "playerOTurn") {
                 makeMove("O", e.target.dataset.index);
                 if (checkForGameEnd()) {
                     return;
                 }
                 GameFlow.changeGameState("playerXTurn")
-                console.log(checkForGameEnd())
             } else if (GameFlow.getGameStatus() == "aiPlayerTurn") {
                 while (GameFlow.getGameStatus() == "aiPlayerTurn") {
                     let num = Math.floor(Math.random() * (9 - 0)) + 0;
@@ -85,8 +86,16 @@ const GameBoard = (() => {
 
     };
     const checkForGameEnd = () => {
+        let leftSpots = 9;
         let leftCrosswise = board[0][0] + board[1][1] + board[2][2]
         let rightCrosswise = board[2][0] + board[1][1] + board[0][2]
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board[i].length; j++) {
+                if (board[i][j] !== "") {
+                    leftSpots--;
+                }
+            }
+        }
         for (let i = 0; i < board.length; i++) {
             let row = board[i].reduce((a, b) => {
                 return a + b;
@@ -95,17 +104,20 @@ const GameBoard = (() => {
             for (let j = 0; j < board.length; j++) {
                 col += board[j][i];
             }
-
             if (col == "XXX" || row == "XXX" || leftCrosswise == "XXX" || rightCrosswise == "XXX") {
                 alert("X wins");
                 GameFlow.changeGameState("PlayerXWins")
                 return true;
-            } else if (col == "OOO" || row == "OOO" || leftCrosswise == "OOO" || rightCrosswise == "OOO") {
+            }
+            if (col == "OOO" || row == "OOO" || leftCrosswise == "OOO" || rightCrosswise == "OOO") {
                 alert("O wins");
                 GameFlow.changeGameState("PlayerOWins")
                 return true;
-            } else {
-                return false;
+            }
+            if (leftSpots == 0) {
+                alert("draw")
+                GameFlow.changeGameState("draw")
+                return true;
             }
         };
 
@@ -224,8 +236,8 @@ const GameFlow = (() => {
                 GameControlls.showScore(playerO)
             }
             if (playerX && playerO) {
-                clearInterval(check)
-                changeGameState("playerXTurn")
+                clearInterval(check);
+                changeGameState("playerXTurn");
                 GameBoard.renderBoard();
                 GameBoard.watchForchange();
             }
